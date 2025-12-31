@@ -17,17 +17,21 @@ function App() {
     loadVotedCategoriesFromCookie();
   }, []);
 
-  const fetchCategories = async () => {
-    try {
-      const response = await fetch('/api/getCategories');
-      const data = await response.json();
-      setCategories(data);
-      setLoading(false);
-    } catch (error) {
-      console.error('Failed to load categories:', error);
-      setLoading(false);
-    }
-  };
+const fetchCategories = async () => {
+  try {
+    const response = await fetch('/api/getCategories');
+    const text = await response.text(); // Get as text first
+    console.log('Response status:', response.status);
+    console.log('Response text:', text);
+    
+    const data = JSON.parse(text); // Then parse
+    setCategories(data);
+    setLoading(false);
+  } catch (error) {
+    console.error('Failed to load categories:', error);
+    setLoading(false);
+  }
+};
 
 const loadVotedCategoriesFromCookie = () => {
   if (!USE_COOKIES) return;
