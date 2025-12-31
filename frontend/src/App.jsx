@@ -19,7 +19,7 @@ function App() {
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch('http://localhost:8888/api/getCategories');
+      const response = await fetch('/api/getCategories');
       const data = await response.json();
       setCategories(data);
       setLoading(false);
@@ -78,7 +78,7 @@ const saveVotedCategoriesToCookie = (categoryIds) => {
     }
 
     try {
-      const response = await fetch('http://localhost:8888/api/vote', {
+      const response = await fetch('/api/vote', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
