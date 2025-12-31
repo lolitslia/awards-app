@@ -3,6 +3,10 @@
   publish = "frontend/dist"
   functions = "netlify/functions"
 
+[dev]
+  framework = "#auto"
+  targetPort = 5173
+
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/:splat"
