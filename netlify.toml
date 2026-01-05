@@ -4,8 +4,9 @@
   functions = "netlify/functions"
 
 [dev]
-  framework = "#auto"
+  command = "npm --prefix frontend run dev"
   targetPort = 5173
+  framework = "#custom"
 
 [[redirects]]
   from = "/api/*"
