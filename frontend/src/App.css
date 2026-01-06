@@ -129,13 +129,6 @@
   color: var(--color-error);
 }
 
-/* Light mode overrides */
-@media (prefers-color-scheme: light) {
-  .vote-recap-card {
-    background-color: var(--color-white);
-  }
-}
-
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -154,4 +147,51 @@ button:disabled {
 
 button:disabled:hover {
   border-color: transparent;
+}
+
+@media (max-width: 768px) {
+  #root {
+    padding: 1rem;
+  }
+
+  h1 {
+    font-size: 2em;
+  }
+
+  .vote-card {
+    padding: 20px;
+    margin: 0 auto 30px auto;
+  }
+
+  .gradient-box {
+    padding: 15px 20px;
+  }
+
+  .vote-card > div:last-child {
+    flex-direction: column-reverse;
+  }
+
+  button.back,
+  button.skip,
+  button.submit {
+    width: 100%;
+  }
+
+  button.back,
+  button.skip {
+    padding: 0;
+  }
+
+
+  .nominee-option {
+    padding: 12px;
+  }
+
+  .progress-bar {
+    height: 6px;
+  }
+}
+
+@media (max-width: 480px) {
+
 }

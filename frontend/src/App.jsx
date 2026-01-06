@@ -14,7 +14,6 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
 
-  // Load categories on mount - only runs once
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -41,7 +40,7 @@ function App() {
 
     fetchCategories();
     loadVotedCategoriesFromCookie();
-  }, []); // Empty dependency array - only runs once on mount
+  }, []);
 
   const saveVotedCategoriesToCookie = useCallback(categoryIds => {
     if (!USE_COOKIES) return;
@@ -70,12 +69,12 @@ function App() {
       const responses = await Promise.all(votePromises);
 
       const allSucceeded = responses.every(response => response.ok);
-      
+
       if (allSucceeded) {
         const votedCategoryIds = Object.keys(selectedNominees).map(Number);
         setVotedCategories(votedCategoryIds);
         saveVotedCategoriesToCookie(votedCategoryIds);
-        
+
         setTimeout(() => {
           setSubmitting(false);
         }, 300);
@@ -101,7 +100,7 @@ function App() {
       alert('Please enter your name first!');
       return;
     }
-    
+
     setSubmitting(true);
     setTimeout(() => {
       setSubmitting(false);
@@ -118,7 +117,7 @@ function App() {
         return newState;
       });
     }
-    
+
     setSubmitting(true);
     setTimeout(() => {
       setSubmitting(false);
@@ -126,36 +125,34 @@ function App() {
     }, 300);
   };
 
-const handleNextQuestion = () => {
-  const currentCategory = categories[currentStep - 1];
-  
-  if (!selectedNominees[currentCategory.id]) {
-    setMessages(prev => ({
-      ...prev,
-      [currentCategory.id]: '⚠️ Please select an option!',
-    }));
-    return;
-  }
+  const handleNextQuestion = () => {
+    const currentCategory = categories[currentStep - 1];
 
-  setMessages(prev => {
-    const newMessages = { ...prev };
-    delete newMessages[currentCategory.id];
-    return newMessages;
-  });
+    if (!selectedNominees[currentCategory.id]) {
+      setMessages(prev => ({
+        ...prev,
+        [currentCategory.id]: '⚠️ Please select an option!',
+      }));
+      return;
+    }
 
-  // If this is the last question, submit votes and go to thank you
-  if (currentStep === categories.length) {
-    handleSubmitAllVotes();
-    setCurrentStep(prev => prev + 1);
-  } else {
-    // Otherwise just move to next question
-    setSubmitting(true);
-    setTimeout(() => {
-      setSubmitting(false);
+    setMessages(prev => {
+      const newMessages = { ...prev };
+      delete newMessages[currentCategory.id];
+      return newMessages;
+    });
+
+    if (currentStep === categories.length) {
+      handleSubmitAllVotes();
       setCurrentStep(prev => prev + 1);
-    }, 300);
-  }
-};
+    } else {
+      setSubmitting(true);
+      setTimeout(() => {
+        setSubmitting(false);
+        setCurrentStep(prev => prev + 1);
+      }, 300);
+    }
+  };
 
   const handleBack = () => {
     setSubmitting(true);
@@ -177,7 +174,7 @@ const handleNextQuestion = () => {
       'linear-gradient(to right, #88efd0, #f0a4e9)',
       'linear-gradient(to right, #ff8b7b, #fff0b2)',
     ];
-    
+
     const gradientIndex = (currentStep - 1) % gradients.length;
     return gradients[gradientIndex];
   };
@@ -432,11 +429,11 @@ const handleNextQuestion = () => {
           >
             Question {currentStep} of {categories.length}
           </div>
-          <div 
-            className="progress-bar" 
-            style={{ 
+          <div
+            className="progress-bar"
+            style={{
               '--progress': `${getProgressPercentage()}%`,
-              '--progress-gradient': getProgressGradient()
+              '--progress-gradient': getProgressGradient(),
             }}
           ></div>
           <h1>{category.name}</h1>
@@ -477,27 +474,19 @@ const handleNextQuestion = () => {
             }}
           >
             {currentStep > 1 && (
-              <button 
-                className="back" 
-                onClick={handleBack}
-                disabled={submitting}
-              >
+              <button className="back" onClick={handleBack} disabled={submitting}>
                 {submitting ? 'Loading...' : '← Back'}
               </button>
             )}
-            <button 
-              className="skip" 
-              onClick={handleSkip}
-              disabled={submitting}
-            >
+            <button className="skip" onClick={handleSkip} disabled={submitting}>
               {submitting ? 'Loading...' : 'Skip'}
             </button>
-            <button 
-              className="submit" 
-              onClick={handleNextQuestion}
-              disabled={submitting}
-            >
-              {submitting ? 'Loading...' : (categoryIndex === categories.length - 1 ? 'Finish' : 'Next')}
+            <button className="submit" onClick={handleNextQuestion} disabled={submitting}>
+              {submitting
+                ? 'Loading...'
+                : categoryIndex === categories.length - 1
+                ? 'Finish'
+                : 'Next'}
             </button>
           </div>
         </div>
@@ -513,13 +502,15 @@ const handleNextQuestion = () => {
           style={{
             maxWidth: '600px',
             margin: '0 auto',
-            padding: '40px',
+            padding: '20px',
           }}
         >
           {submitting ? (
             <>
               <h1>Submitting Your Votes...</h1>
-              <p style={{ fontSize: '18px', marginTop: '20px' }}>Please wait while we save your responses.</p>
+              <p style={{ fontSize: '18px', marginTop: '20px' }}>
+                Please wait while we save your responses.
+              </p>
             </>
           ) : (
             <>
@@ -561,7 +552,8 @@ const handleNextQuestion = () => {
               </div>
 
               <p style={{ fontSize: '14px', color: 'var(--color-gray-dark)', marginTop: '20px' }}>
-                You voted on {Object.keys(selectedNominees).length} out of {categories.length} categories.
+                You voted on {Object.keys(selectedNominees).length} out of {categories.length}{' '}
+                categories.
               </p>
             </>
           )}
