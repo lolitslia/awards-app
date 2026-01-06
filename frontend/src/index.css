@@ -82,6 +82,11 @@ button.submit {
   box-shadow: rgba(0, 0, 0, 0.25) 3px 3px 10px 2px;
 }
 
+button.back {
+  padding: 12px 30px;
+  color: var(--color-gray-dark);
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;

@@ -11,7 +11,7 @@
   border-radius: 28px;
   padding: 20px 40px;
 }
-/* Nominee option cards */
+
 .vote-card {
   max-width: 600px;
   margin: 0 auto 60px auto;
@@ -19,6 +19,7 @@
   background: radial-gradient(circle at 100% 100%, #181a20 0, #181a20 26px, transparent 26px) 0% 0%/28px 28px no-repeat, radial-gradient(circle at 0 100%, #181a20 0, #181a20 26px, transparent 26px) 100% 0%/28px 28px no-repeat, radial-gradient(circle at 100% 0, #181a20 0, #181a20 26px, transparent 26px) 0% 100%/28px 28px no-repeat, radial-gradient(circle at 0 0, #181a20 0, #181a20 26px, transparent 26px) 100% 100%/28px 28px no-repeat, linear-gradient(#181a20, #181a20) 50% 50%/calc(100% - 4px) calc(100% - 56px) no-repeat, linear-gradient(#181a20, #181a20) 50% 50%/calc(100% - 56px) calc(100% - 4px) no-repeat, radial-gradient(at 0% 0%, rgb(105,88,146) 0%, transparent 70%), radial-gradient(at 100% 100%, rgba(106,107,111,0) 0%, transparent 70%), radial-gradient(at 100% 0%, rgb(106,107,111) 0%, transparent 70%);
   border-radius: 28px;
   box-sizing: content-box;
+  animation: fadeIn 0.4s ease-out;
 }
 
 .progress-bar {
@@ -30,17 +31,19 @@
 }
 .progress-bar::after {
   content: '';
-  width: 25%;
+  width: var(--progress, 0%);
   height: 100%;
-  background-image: linear-gradient(to right, red, blue);
+  background-image: var(--progress-gradient);
   position: absolute;
   left: 0;
   top: 0;
   border-radius: 18px;
+  transition: width 0.3s ease-out;
 }
 
 .nominee-option {
-  display: block;
+  display: flex;
+  align-items: center;
   margin-bottom: 15px;
   padding: 15px;
   border: 2px solid #252832;
@@ -60,7 +63,43 @@
   box-sizing: border-box;
 }
 
-/* Vote recap cards */
+/* Hide default radio button */
+.nominee-option input[type="radio"] {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  width: 24px;
+  height: 24px;
+  border: 2px solid #ddd;
+  border-radius: 50%;
+  background-color: white;
+  cursor: pointer;
+  position: relative;
+  flex-shrink: 0;
+  margin-right: 10px;
+  transition: all 0.2s ease;
+}
+
+.nominee-option input[type="radio"]:hover {
+  border-color: var(--color-primary);
+}
+
+.nominee-option input[type="radio"]:checked {
+  background-color: var(--color-success);
+  border-color: var(--color-success);
+}
+
+.nominee-option input[type="radio"]:checked::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+}
+
 .vote-recap-card {
   margin-bottom: 15px;
   padding: 15px;
@@ -95,4 +134,24 @@
   .vote-recap-card {
     background-color: var(--color-white);
   }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+button:disabled:hover {
+  border-color: transparent;
 }
