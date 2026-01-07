@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import './App.css';
 
-const USE_COOKIES = false;
+const USE_COOKIES = true;
 const USE_WIZARD = true;
 
 function App() {
@@ -27,27 +27,53 @@ function App() {
       }
     };
 
-    const loadVotedCategoriesFromCookie = () => {
-      if (!USE_COOKIES) return;
+const loadVotesFromCookie = () => {
+  if (!USE_COOKIES) return;
 
-      const cookie = document.cookie.split('; ').find(row => row.startsWith('votedCategories='));
+  const votesCookie = document.cookie.split('; ').find(row => row.startsWith('selectedNominees='));
+  const namesCookie = document.cookie.split('; ').find(row => row.startsWith('voterName='));
 
-      if (cookie) {
-        const voted = JSON.parse(cookie.split('=')[1]);
-        setVotedCategories(voted);
-      }
-    };
+  if (votesCookie) {
+    const votes = JSON.parse(votesCookie.split('=')[1]);
+    
+    const votesWithNumbers = {};
+    Object.entries(votes).forEach(([categoryId, nomineeId]) => {
+      votesWithNumbers[Number(categoryId)] = Number(nomineeId);
+    });
+    
+    setSelectedNominees(votesWithNumbers);
+    
+    const votedCategoryIds = Object.keys(votesWithNumbers).map(Number);
+    setVotedCategories(votedCategoryIds);
+  }
+
+  if (namesCookie) {
+    const name = namesCookie.split('=')[1];
+    setVoterName(decodeURIComponent(name));
+  }
+};
 
     fetchCategories();
-    loadVotedCategoriesFromCookie();
+    loadVotesFromCookie();
   }, []);
 
-  const saveVotedCategoriesToCookie = useCallback(categoryIds => {
-    if (!USE_COOKIES) return;
-    document.cookie = `votedCategories=${JSON.stringify(categoryIds)}; max-age=${
-      60 * 60 * 24 * 30
-    }; path=/`;
-  }, []);
+useEffect(() => {
+  if (USE_COOKIES && categories.length > 0 && votedCategories.length > 0 && currentStep === 0) {
+    setCurrentStep(categories.length + 1);
+  }
+}, [categories, votedCategories, currentStep]);
+
+const saveVotesToCookie = useCallback((votes, name) => {
+  if (!USE_COOKIES) return;
+  
+  document.cookie = `selectedNominees=${JSON.stringify(votes)}; max-age=${
+    60 * 60 * 24 * 30
+  }; path=/`;
+  
+  document.cookie = `voterName=${encodeURIComponent(name)}; max-age=${
+    60 * 60 * 24 * 30
+  }; path=/`;
+}, []);
 
   const handleSubmitAllVotes = useCallback(async () => {
     setSubmitting(true);
@@ -73,7 +99,7 @@ function App() {
       if (allSucceeded) {
         const votedCategoryIds = Object.keys(selectedNominees).map(Number);
         setVotedCategories(votedCategoryIds);
-        saveVotedCategoriesToCookie(votedCategoryIds);
+        saveVotesToCookie(selectedNominees, voterName);
 
         setTimeout(() => {
           setSubmitting(false);
@@ -86,7 +112,7 @@ function App() {
       setSubmitting(false);
       alert('❌ Failed to submit votes: ' + error.message);
     }
-  }, [selectedNominees, voterName, saveVotedCategoriesToCookie]);
+  }, [selectedNominees, voterName, saveVotesToCookie]);
 
   const handleNomineeSelect = (categoryId, nomineeId) => {
     setSelectedNominees(prev => ({
